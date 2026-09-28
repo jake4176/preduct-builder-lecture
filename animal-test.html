@@ -293,6 +293,107 @@
       color: var(--text-muted);
     }
 
+    /* Webcam mode */
+    .mode-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .mode-row .btn { flex: none; min-width: 0; padding: 0.7rem 1.2rem; font-size: 0.95rem; }
+
+    .webcam-panel[hidden], .mode-row[hidden], .dropzone[hidden] { display: none; }
+
+    .webcam-frame {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      background: rgba(var(--panel-rgb), 0.6);
+      border: 2px solid rgba(var(--tint-rgb), 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .webcam-frame canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .live-badge {
+      position: absolute;
+      top: 0.6rem;
+      left: 0.6rem;
+      z-index: 1;
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .webcam-frame.live .live-badge { display: inline-flex; }
+
+    .live-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    .live-meter {
+      max-width: 360px;
+      margin: 1rem auto 0;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .live-meter .dog-label { color: var(--dog); }
+    .live-meter .cat-label { color: var(--cat); }
+
+    .live-track {
+      display: flex;
+      height: 12px;
+      border-radius: 9999px;
+      overflow: hidden;
+      background: rgba(var(--tint-rgb), 0.08);
+    }
+
+    .live-track div { width: 50%; transition: width 0.25s ease; }
+    .live-track .live-dog { background: linear-gradient(90deg, #fbbf24, var(--dog)); }
+    .live-track .live-cat { background: linear-gradient(90deg, #c4b5fd, var(--cat)); }
+
+    .webcam-panel .action-row {
+      max-width: 360px;
+      margin: 1rem auto 0;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     /* Result */
     .result-card { display: none; text-align: center; }
     .result-card.show { display: block; animation: fadeUp 0.45s ease; }
@@ -510,6 +611,27 @@
         </div>
       </label>
       <input class="sr-only" type="file" id="fileInput" accept="image/*" />
+
+      <div class="webcam-panel" id="webcamPanel" hidden>
+        <div class="webcam-frame" id="webcamFrame">
+          <span class="live-badge">LIVE</span>
+          <span id="webcamMsg">카메라 준비 중...</span>
+        </div>
+        <div class="live-meter" aria-hidden="true">
+          <span class="dog-label">🐶 <span id="liveDog">-</span></span>
+          <div class="live-track"><div class="live-dog" id="liveDogBar"></div><div class="live-cat" id="liveCatBar"></div></div>
+          <span class="cat-label"><span id="liveCat">-</span> 🐱</span>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary" type="button" id="captureBtn" onclick="captureWebcam()" disabled>📸 결과 보기</button>
+          <button class="btn btn-secondary" type="button" onclick="stopWebcam()">웹캠 끄기</button>
+        </div>
+      </div>
+
+      <div class="mode-row" id="modeRow">
+        <button class="btn btn-secondary" type="button" id="webcamBtn" onclick="startWebcam()">🎥 웹캠으로 하기</button>
+      </div>
+
       <p class="model-status" id="modelStatus" role="status" aria-live="polite">AI 모델을 불러오는 중...</p>
       <p class="privacy-note">🔒 사진은 서버로 전송되지 않고 내 기기 브라우저 안에서만 분석됩니다.</p>
     </section>
@@ -535,7 +657,7 @@
       <div class="action-row">
         <button class="btn btn-primary" type="button" onclick="retry()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-          다른 사진으로 하기
+          다시 하기
         </button>
         <button class="btn btn-secondary" type="button" onclick="shareResult()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
@@ -583,7 +705,16 @@
 
     let model = null;
     let lastResult = null;
+    let lastSource = 'upload'; // 'upload' | 'webcam', decides what "다시 하기" does
     let previewUrl = null;
+
+    // Webcam state
+    const WEBCAM_SIZE = 360;
+    const LIVE_PREDICT_MS = 250; // how often the live meter updates
+    let webcam = null;
+    let webcamLoopId = null;
+    let livePredicting = false;
+    let lastLivePredict = 0;
 
     const $ = (id) => document.getElementById(id);
     const dropzone = $('dropzone');
@@ -636,6 +767,8 @@
         return;
       }
       if (dropzone.classList.contains('analyzing')) return;
+      if (webcam) stopWebcam();
+      lastSource = 'upload';
 
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       previewUrl = URL.createObjectURL(file);
@@ -676,16 +809,19 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function showResult(predictions) {
+    function toPercents(predictions) {
       const scores = { dog: 0, cat: 0 };
       predictions.forEach(p => {
         const type = LABEL_TO_TYPE[p.className];
         if (type) scores[type] = p.probability;
       });
-
       const total = scores.dog + scores.cat || 1;
       const dogPct = Math.round((scores.dog / total) * 100);
-      const catPct = 100 - dogPct;
+      return { dogPct, catPct: 100 - dogPct };
+    }
+
+    function showResult(predictions) {
+      const { dogPct, catPct } = toPercents(predictions);
       const type = Math.abs(dogPct - catPct) <= 10 ? 'mix' : (dogPct > catPct ? 'dog' : 'cat');
       const info = RESULTS[type];
 
@@ -714,8 +850,136 @@
     function retry() {
       $('resultCard').classList.remove('show');
       dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      fileInput.click();
+      if (lastSource === 'webcam') startWebcam();
+      else fileInput.click();
     }
+
+    // ---- Webcam mode ----
+    function setWebcamUI(on) {
+      $('webcamPanel').hidden = !on;
+      $('modeRow').hidden = on;
+      dropzone.hidden = on;
+    }
+
+    async function startWebcam() {
+      if (webcam) return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('이 브라우저에서는 웹캠을 사용할 수 없어요. 사진 올리기를 이용해 주세요.');
+        return;
+      }
+
+      $('resultCard').classList.remove('show');
+      setWebcamUI(true);
+      $('webcamMsg').textContent = '카메라 준비 중... (권한 요청이 뜨면 허용해 주세요)';
+      $('captureBtn').disabled = true;
+      resetLiveMeter();
+
+      const cam = new tmImage.Webcam(WEBCAM_SIZE, WEBCAM_SIZE, true); // true = mirror like a selfie
+      webcam = cam;
+      try {
+        await cam.setup({ facingMode: 'user' });
+        // Muted + inline so browsers allow playback (iOS Safari refuses otherwise)
+        cam.webcam.muted = true;
+        cam.webcam.setAttribute('muted', '');
+        cam.webcam.setAttribute('playsinline', '');
+        await cam.play();
+      } catch (err) {
+        console.error('webcam error:', err && err.name, err);
+        if (webcam === cam) webcam = null;
+        try { cam.stop(); } catch (e) {}
+        setWebcamUI(false);
+        showToast(await webcamErrorMessage());
+        return;
+      }
+
+      // Stopped while the permission prompt was open
+      if (webcam !== cam) { cam.stop(); return; }
+
+      const frame = $('webcamFrame');
+      $('webcamMsg').textContent = '';
+      frame.appendChild(cam.canvas);
+      frame.classList.add('live');
+      webcamLoopId = requestAnimationFrame(webcamLoop);
+
+      try {
+        await modelReady;
+        if (webcam === cam) $('captureBtn').disabled = false;
+      } catch (e) { /* model error already shown in the status line */ }
+    }
+
+    // tmImage replaces camera errors with a generic string, so ask the browser for the permission state
+    async function webcamErrorMessage() {
+      try {
+        const perm = await navigator.permissions.query({ name: 'camera' });
+        if (perm.state === 'denied') return '카메라 권한이 차단되어 있어요. 주소창 옆 🔒 아이콘에서 카메라를 허용해 주세요.';
+        if (perm.state === 'granted') return '카메라를 찾지 못했거나 다른 앱에서 사용 중이에요.';
+      } catch (e) { /* Permissions API not available for camera in this browser */ }
+      return '카메라를 켜지 못했어요. 권한을 허용했는지 확인하거나 사진 올리기를 이용해 주세요.';
+    }
+
+    async function webcamLoop(now) {
+      if (!webcam) return;
+      webcam.update();
+      if (model && !livePredicting && now - lastLivePredict >= LIVE_PREDICT_MS) {
+        livePredicting = true;
+        lastLivePredict = now;
+        try {
+          updateLiveMeter(toPercents(await model.predict(webcam.canvas)));
+        } catch (e) { /* skip this frame */ }
+        livePredicting = false;
+      }
+      webcamLoopId = requestAnimationFrame(webcamLoop);
+    }
+
+    function updateLiveMeter({ dogPct, catPct }) {
+      $('liveDog').textContent = `${dogPct}%`;
+      $('liveCat').textContent = `${catPct}%`;
+      $('liveDogBar').style.width = `${dogPct}%`;
+      $('liveCatBar').style.width = `${catPct}%`;
+    }
+
+    function resetLiveMeter() {
+      $('liveDog').textContent = '-';
+      $('liveCat').textContent = '-';
+      $('liveDogBar').style.width = '50%';
+      $('liveCatBar').style.width = '50%';
+    }
+
+    function stopWebcam() {
+      if (webcamLoopId) cancelAnimationFrame(webcamLoopId);
+      webcamLoopId = null;
+      if (webcam) {
+        try { webcam.stop(); } catch (e) {}
+        if (webcam.canvas && webcam.canvas.parentNode) webcam.canvas.remove();
+      }
+      webcam = null;
+      $('webcamFrame').classList.remove('live');
+      setWebcamUI(false);
+    }
+
+    async function captureWebcam() {
+      if (!webcam || !model) return;
+      $('captureBtn').disabled = true;
+      webcam.update();
+      try {
+        const predictions = await model.predict(webcam.canvas);
+        // Keep the captured frame as the photo shown above the result
+        const snapshot = webcam.canvas.toDataURL('image/jpeg', 0.9);
+        stopWebcam();
+        if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+        await loadImage(preview, snapshot);
+        dropzone.classList.add('has-image');
+        lastSource = 'webcam';
+        showResult(predictions);
+      } catch (err) {
+        console.error(err);
+        $('captureBtn').disabled = false;
+        showToast('분석에 실패했습니다. 다시 시도해 주세요.');
+      }
+    }
+
+    // Release the camera when leaving the page
+    window.addEventListener('pagehide', () => { if (webcam) stopWebcam(); });
 
     async function shareResult() {
       if (!lastResult) return;

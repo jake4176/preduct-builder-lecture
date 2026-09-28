@@ -36,7 +36,8 @@ Upload a photo and an image model tells you whether you look more like a dog or 
 - Built on a [Teachable Machine](https://teachablemachine.withgoogle.com/) image model trained on dog and cat photos
 - Shows dog/cat percentages, a result type (dog, cat, or half-and-half), and a short description
 - **Photos never leave your device**: the model runs in your browser with TensorFlow.js
-- Upload by tapping or drag-and-drop; share the result with one click
+- Upload by tapping or drag-and-drop, **or use your webcam** with a live dog/cat meter and one-tap capture
+- Share the result with one click
 - Same dark/light theme as the lotto page
 
 #### How it works
@@ -77,7 +78,8 @@ To run it locally, just open `index.html` in a browser.
 - 강아지·고양이 사진으로 학습한 [Teachable Machine](https://teachablemachine.withgoogle.com/) 이미지 모델 사용
 - 강아지상/고양이상 비율(%), 결과 유형(강아지상·고양이상·반반상), 한 줄 설명 표시
 - **사진은 서버로 전송되지 않음**: TensorFlow.js로 방문자 브라우저 안에서만 분석
-- 눌러서 올리기 또는 끌어다 놓기, 결과 공유 버튼 지원
+- 눌러서 올리기, 끌어다 놓기, 또는 **웹캠 모드**(실시간 강아지/고양이 비율 표시 후 버튼 한 번으로 결과 보기)
+- 결과 공유 버튼 지원
 - 로또 페이지와 같은 다크/라이트 테마
 
 #### 동작 방식
