@@ -8,15 +8,35 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        theme = localStorage.getItem('lotto_theme') ||
+          (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 50%, #030712 100%);
       --card-bg: rgba(30, 41, 59, 0.7);
-      --card-border: rgba(255, 255, 255, 0.1);
+      --card-border: rgba(var(--tint-rgb), 0.1);
       --accent: #f59e0b;
       --accent-glow: rgba(245, 158, 11, 0.35);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --text-soft: #e2e8f0;
+      --badge-text: #fbbf24;
+      --title-gradient: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #f59e0b 100%);
+      --tint-rgb: 255, 255, 255;   /* overlays, borders, chips */
+      --panel-rgb: 15, 23, 42;     /* inner panels, inputs */
+      --shadow-rgb: 0, 0, 0;
+      --shadow-alpha: 0.5;
+      --toast-bg: #0f172a;
+      --toast-text: #f8fafc;
+      color-scheme: dark;
       
       /* Lotto Ball Colors */
       --ball-yellow: radial-gradient(circle at 35% 35%, #fef08a, #eab308 50%, #a16207 100%);
@@ -25,6 +45,25 @@
       --ball-gray: radial-gradient(circle at 35% 35%, #cbd5e1, #64748b 50%, #334155 100%);
       --ball-green: radial-gradient(circle at 35% 35%, #86efac, #22c55e 50%, #15803d 100%);
       --ball-bonus: radial-gradient(circle at 35% 35%, #f472b6, #db2777 50%, #9d174d 100%);
+    }
+
+    :root[data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #fff7ed 0%, #f1f5f9 50%, #e2e8f0 100%);
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(15, 23, 42, 0.1);
+      --accent: #d97706;
+      --accent-glow: rgba(245, 158, 11, 0.25);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-soft: #334155;
+      --badge-text: #b45309;
+      --title-gradient: linear-gradient(135deg, #0f172a 0%, #334155 50%, #d97706 100%);
+      --tint-rgb: 15, 23, 42;
+      --panel-rgb: 255, 255, 255;
+      --shadow-alpha: 0.15;
+      --toast-bg: #ffffff;
+      --toast-text: #0f172a;
+      color-scheme: light;
     }
 
     * {
@@ -39,6 +78,7 @@
       min-height: 100vh;
       background: var(--bg-gradient);
       color: var(--text-main);
+      transition: color 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -60,6 +100,39 @@
       position: relative;
     }
 
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: rotate(20deg) scale(1.08);
+      border-color: var(--accent);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle .icon-sun { display: none; }
+    :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+    :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
     .badge {
       display: inline-flex;
       align-items: center;
@@ -70,7 +143,7 @@
       font-weight: 700;
       background: rgba(245, 158, 11, 0.15);
       border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fbbf24;
+      color: var(--badge-text);
       margin-bottom: 0.75rem;
       box-shadow: 0 0 20px var(--accent-glow);
     }
@@ -79,7 +152,7 @@
       font-size: 2.6rem;
       font-weight: 900;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #f59e0b 100%);
+      background: var(--title-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
@@ -98,7 +171,7 @@
       -webkit-backdrop-filter: blur(16px);
       border-radius: 1.5rem;
       padding: 1.75rem;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px -15px rgba(var(--shadow-rgb), var(--shadow-alpha));
     }
 
     /* Machine Showcase / Stage */
@@ -136,8 +209,8 @@
       flex-direction: column;
       gap: 0.6rem;
       padding: 1rem 1.25rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(var(--panel-rgb), 0.6);
+      border: 1px solid rgba(var(--tint-rgb), 0.06);
       border-radius: 1.25rem;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -145,7 +218,7 @@
     .set-group:hover {
       border-color: rgba(245, 158, 11, 0.3);
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 25px -10px rgba(var(--shadow-rgb), var(--shadow-alpha));
     }
 
     .set-header {
@@ -165,9 +238,9 @@
     .info-tag {
       padding: 0.15rem 0.5rem;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(var(--tint-rgb), 0.07);
       font-size: 0.75rem;
-      color: #e2e8f0;
+      color: var(--text-soft);
     }
 
     .balls-wrapper {
@@ -231,8 +304,8 @@
     .ball-bonus  { background: var(--ball-bonus); }
 
     .ball-empty {
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px dashed rgba(255, 255, 255, 0.15);
+      background: rgba(var(--tint-rgb), 0.05);
+      border: 2px dashed rgba(var(--tint-rgb), 0.15);
       box-shadow: none;
       color: var(--text-muted);
       font-size: 1.1rem;
@@ -267,8 +340,8 @@
     }
 
     .select-custom, .input-custom {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(var(--panel-rgb), 0.8);
+      border: 1px solid rgba(var(--tint-rgb), 0.12);
       color: var(--text-main);
       padding: 0.75rem 1rem;
       border-radius: 0.75rem;
@@ -325,16 +398,16 @@
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(var(--tint-rgb), 0.08);
       color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(var(--tint-rgb), 0.12);
       flex: 1;
       min-width: 130px;
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(var(--tint-rgb), 0.14);
+      border-color: rgba(var(--tint-rgb), 0.25);
       transform: translateY(-2px);
     }
 
@@ -357,7 +430,7 @@
       display: none;
       margin-top: 1.25rem;
       padding-top: 1.25rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(var(--tint-rgb), 0.08);
       animation: fadeIn 0.3s ease;
     }
 
@@ -377,8 +450,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(var(--tint-rgb), 0.06);
+      border: 1px solid rgba(var(--tint-rgb), 0.1);
       border-radius: 0.5rem;
       font-size: 0.85rem;
       font-weight: 700;
@@ -387,7 +460,7 @@
     }
 
     .pick-chip:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(var(--tint-rgb), 0.15);
     }
 
     .pick-chip.selected-include {
@@ -417,17 +490,17 @@
       font-size: 0.85rem;
       font-weight: 600;
       border-radius: 0.6rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(var(--tint-rgb), 0.1);
+      background: rgba(var(--tint-rgb), 0.04);
       color: var(--text-muted);
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .tab-btn.active {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(var(--tint-rgb), 0.15);
       color: var(--text-main);
-      border-color: rgba(255, 255, 255, 0.3);
+      border-color: rgba(var(--tint-rgb), 0.3);
     }
 
     /* History & Statistics */
@@ -464,7 +537,7 @@
       width: 6px;
     }
     .history-list::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(var(--tint-rgb), 0.15);
       border-radius: 4px;
     }
 
@@ -473,8 +546,8 @@
       justify-content: space-between;
       align-items: center;
       padding: 0.75rem 1rem;
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(var(--panel-rgb), 0.5);
+      border: 1px solid rgba(var(--tint-rgb), 0.05);
       border-radius: 0.85rem;
       font-size: 0.875rem;
     }
@@ -504,7 +577,7 @@
       gap: 0.85rem;
       flex-wrap: wrap;
       padding: 1rem;
-      background: rgba(15, 23, 42, 0.4);
+      background: rgba(var(--panel-rgb), 0.4);
       border-radius: 1rem;
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -528,14 +601,14 @@
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: #0f172a;
+      background: var(--toast-bg);
       border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #f8fafc;
+      color: var(--toast-text);
       padding: 0.8rem 1.5rem;
       border-radius: 9999px;
       font-size: 0.95rem;
       font-weight: 600;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow);
+      box-shadow: 0 15px 30px rgba(var(--shadow-rgb), var(--shadow-alpha)), 0 0 15px var(--accent-glow);
       z-index: 1000;
       opacity: 0;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -568,6 +641,10 @@
   <div class="container">
     <!-- Header -->
     <header>
+      <button class="theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="라이트 모드로 전환" title="라이트 모드로 전환">
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
       <div class="badge">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
         <span>Lotto 6/45 Simulator</span>
@@ -1006,6 +1083,25 @@
     }
 
     // Toast
+    // Dark / light theme
+    function updateThemeToggleLabel() {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const label = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
+      const btn = document.getElementById('themeToggle');
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    }
+
+    function toggleTheme() {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('lotto_theme', next); } catch (e) {}
+      updateThemeToggleLabel();
+      showToast(next === 'light' ? '☀️ 라이트 모드' : '🌙 다크 모드');
+    }
+
+    updateThemeToggleLabel();
+
     function showToast(msg) {
       const toast = document.getElementById('toast');
       toast.textContent = msg;
