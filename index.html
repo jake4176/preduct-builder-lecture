@@ -163,6 +163,43 @@
       font-size: 1rem;
     }
 
+    .header-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+    }
+
+    .header-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .header-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    #contact { scroll-margin-top: 1.5rem; }
+
     /* Cards */
     .card {
       background: var(--card-bg);
@@ -743,6 +780,10 @@
       </div>
       <h1>행운의 로또 번호 추첨</h1>
       <p class="subtitle">실시간 애니메이션 & 맞춤 필터링 기반 로또 번호 추첨 시뮬레이터</p>
+      <a class="header-link" href="#contact">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        제휴 문의
+      </a>
     </header>
 
     <!-- Main Generator Card -->
