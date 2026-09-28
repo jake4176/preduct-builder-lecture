@@ -405,6 +405,17 @@
       min-width: 130px;
     }
 
+    /* Compact buttons inside card headers/footers: size to content, don't stretch */
+    .btn.btn-sm {
+      flex: none;
+      min-width: 0;
+      gap: 0.35rem;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 0.65rem;
+    }
+
     .btn-secondary:hover {
       background: rgba(var(--tint-rgb), 0.14);
       border-color: rgba(var(--tint-rgb), 0.25);
@@ -739,7 +750,10 @@
         </p>
         <div class="number-picker-grid" id="numberGrid"></div>
         <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
-          <button class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;" onclick="resetFilters()">필터 초기화</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetFilters()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            필터 초기화
+          </button>
         </div>
       </div>
     </section>
@@ -761,7 +775,10 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           최근 추첨 기록
         </span>
-        <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="clearHistory()">기록 삭제</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearHistory()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+          기록 삭제
+        </button>
       </div>
       <div class="history-list" id="historyList">
         <div style="text-align: center; color: var(--text-muted); padding: 1.5rem 0; font-size: 0.9rem;">
