@@ -1,6 +1,8 @@
 # preduct-builder-lecture
 
-**Live site / 사이트 바로가기:** https://jake4176.github.io/preduct-builder-lecture/
+**Live site / 사이트 바로가기:**
+- 🎰 Lotto 6/45 / 로또 번호 추첨기: https://jake4176.github.io/preduct-builder-lecture/
+- 🐶 Animal face test / 동물상 테스트: https://jake4176.github.io/preduct-builder-lecture/animal-test.html
 
 [English](#english) · [한국어](#한국어)
 
@@ -26,6 +28,16 @@ A browser-based simulator that draws Korean Lotto 6/45 numbers with an animated 
 - **Dark / light mode**: toggle with the button in the top-right corner; follows your system setting until you choose, then remembers your choice
 - **Partnership inquiry form**: visitors can send partnership or collaboration requests; submissions are delivered through [Formspree](https://formspree.io)
 - **Comments**: visitor comments at the bottom of the page, powered by [Disqus](https://disqus.com); loads only when you scroll near it and matches the dark/light theme
+
+### Animal Face Test (`animal-test.html`)
+
+Upload a photo and an image model tells you whether you look more like a dog or a cat.
+
+- Built on a [Teachable Machine](https://teachablemachine.withgoogle.com/) image model trained on dog and cat photos
+- Shows dog/cat percentages, a result type (dog, cat, or half-and-half), and a short description
+- **Photos never leave your device**: the model runs in your browser with TensorFlow.js
+- Upload by tapping or drag-and-drop; share the result with one click
+- Same dark/light theme as the lotto page
 
 #### How it works
 
@@ -57,6 +69,16 @@ To run it locally, just open `index.html` in a browser.
 - **다크 / 라이트 모드**: 오른쪽 위 버튼으로 전환. 처음에는 기기 설정을 따르고, 한 번 선택하면 그 선택을 기억
 - **제휴 문의 폼**: 방문자가 광고·협업·제휴 제안을 보낼 수 있으며, [Formspree](https://formspree.io)를 통해 전달
 - **댓글**: 페이지 맨 아래에 [Disqus](https://disqus.com) 댓글. 근처까지 스크롤하면 불러오며, 다크/라이트 모드에 맞춰 표시
+
+### 동물상 테스트 (`animal-test.html`)
+
+사진을 올리면 AI가 강아지상인지 고양이상인지 알려 주는 테스트입니다.
+
+- 강아지·고양이 사진으로 학습한 [Teachable Machine](https://teachablemachine.withgoogle.com/) 이미지 모델 사용
+- 강아지상/고양이상 비율(%), 결과 유형(강아지상·고양이상·반반상), 한 줄 설명 표시
+- **사진은 서버로 전송되지 않음**: TensorFlow.js로 방문자 브라우저 안에서만 분석
+- 눌러서 올리기 또는 끌어다 놓기, 결과 공유 버튼 지원
+- 로또 페이지와 같은 다크/라이트 테마
 
 #### 동작 방식
 
