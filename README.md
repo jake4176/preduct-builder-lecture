@@ -25,6 +25,7 @@ A browser-based simulator that draws Korean Lotto 6/45 numbers with an animated 
 - **Recent draw history**: the last 25 sets, saved in your browser (`localStorage`)
 - **Dark / light mode**: toggle with the button in the top-right corner; follows your system setting until you choose, then remembers your choice
 - **Partnership inquiry form**: visitors can send partnership or collaboration requests; submissions are delivered through [Formspree](https://formspree.io)
+- **Comments**: visitor comments at the bottom of the page, powered by [Disqus](https://disqus.com); loads only when you scroll near it and matches the dark/light theme
 
 #### How it works
 
@@ -55,6 +56,7 @@ To run it locally, just open `index.html` in a browser.
 - **최근 추첨 기록**: 최근 25세트를 브라우저(`localStorage`)에 저장
 - **다크 / 라이트 모드**: 오른쪽 위 버튼으로 전환. 처음에는 기기 설정을 따르고, 한 번 선택하면 그 선택을 기억
 - **제휴 문의 폼**: 방문자가 광고·협업·제휴 제안을 보낼 수 있으며, [Formspree](https://formspree.io)를 통해 전달
+- **댓글**: 페이지 맨 아래에 [Disqus](https://disqus.com) 댓글. 근처까지 스크롤하면 불러오며, 다크/라이트 모드에 맞춰 표시
 
 #### 동작 방식
 
