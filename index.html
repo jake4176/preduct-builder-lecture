@@ -966,7 +966,7 @@
     let includeNumbers = new Set();
     let excludeNumbers = new Set();
     let currentFilterMode = 'include';
-    let history = JSON.parse(localStorage.getItem('lotto_history') || '[]');
+    let drawHistory = JSON.parse(localStorage.getItem('lotto_history') || '[]');
 
     // Web Audio Sound Synth
     const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
@@ -1135,19 +1135,19 @@
     function saveToHistory(sets) {
       const timestamp = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       sets.forEach(s => {
-        history.unshift({
+        drawHistory.unshift({
           time: timestamp,
           numbers: s.numbers,
           bonus: s.bonus
         });
       });
-      if (history.length > 25) history = history.slice(0, 25);
-      localStorage.setItem('lotto_history', JSON.stringify(history));
+      if (drawHistory.length > 25) drawHistory = drawHistory.slice(0, 25);
+      localStorage.setItem('lotto_history', JSON.stringify(drawHistory));
     }
 
     function renderHistory() {
       const container = document.getElementById('historyList');
-      if (!history.length) {
+      if (!drawHistory.length) {
         container.innerHTML = `
           <div style="text-align: center; color: var(--text-muted); padding: 1.5rem 0; font-size: 0.9rem;">
             아직 추첨 기록이 없습니다. 상단의 추첨 버튼을 눌러보세요!
@@ -1156,7 +1156,7 @@
         return;
       }
 
-      container.innerHTML = history.map((item, idx) => `
+      container.innerHTML = drawHistory.map((item, idx) => `
         <div class="history-item">
           <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">${item.time}</div>
           <div class="history-balls">
@@ -1169,7 +1169,7 @@
 
     function clearHistory() {
       if (!confirm('추첨 기록을 모두 삭제하시겠습니까?')) return;
-      history = [];
+      drawHistory = [];
       localStorage.removeItem('lotto_history');
       renderHistory();
       showToast('추첨 기록이 삭제되었습니다.');
